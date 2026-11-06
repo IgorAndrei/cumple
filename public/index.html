@@ -104,6 +104,11 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 .count b { font-family: var(--mono); font-weight: 500; font-size: 26px; font-variant-numeric: tabular-nums; color: var(--ink); }
 .count span { font-size: 11px; font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
 
+/* Botón de música */
+.music { position: fixed; right: max(16px, calc(env(safe-area-inset-right, 0px) + 12px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); z-index: 30; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--ink); color: var(--paper); font-size: 20px; cursor: pointer; box-shadow: 0 3px 0 var(--hot); display: grid; place-items: center; }
+.music:focus-visible { outline: 3px solid var(--butter); outline-offset: 3px; }
+.music.playing { animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 50% { transform: scale(1.08); } }
 #confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -114,6 +119,8 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 <body>
 
 <canvas id="confetti" aria-hidden="true"></canvas>
+<audio id="musica" src="musica.mp3" loop preload="auto"></audio>
+<button class="music" id="musicBtn" aria-label="Pausar música" hidden>♪</button>
 
 <main>
   <!-- Escena 0: todavía no es el día -->
@@ -132,7 +139,7 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
   <!-- Escena 1: el regalo -->
   <section class="scene" id="s1">
     <div class="eyebrow">25 de noviembre</div>
-    <h1>¡Feliz cumpleaños, <span class="js-name">Cata</span>!</h1>
+    <h1>¡Feliz cumpleaños, <span class="js-name">Isis</span>!</h1>
     <p class="hint">Tengo algo para ti. Toca el regalo.</p>
     <button class="gift idle" id="gift" aria-label="Abrir el regalo">
       <span class="bow"></span><span class="lid"></span><span class="box"></span>
@@ -186,7 +193,7 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 
 <script>
 /* ====== PERSONALIZA AQUÍ ====== */
-const NOMBRE = "Cata";             // su nombre o apodo
+const NOMBRE = "Isis";             // su nombre o apodo
 const DE = "Andrei";                // quién firma
 const LUGAR = "Movistar Arena";                // ej: "Movistar Arena" (déjalo vacío para ocultarlo)
 const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0); // 20 ago 2027, 21:00
@@ -227,8 +234,30 @@ function tick() {
 
 function go(from, to) { $(from).hidden = true; $(to).hidden = false; scrollTo(0, 0); }
 
+/* Música: los navegadores solo dejan sonar audio después de un toque */
+const audio = $("musica"), mBtn = $("musicBtn");
+let musicaOn = false;
+function startMusic() {
+  if (musicaOn || !$("s0").hidden) return;
+  musicaOn = true;
+  audio.volume = 0;
+  audio.play().then(() => {
+    mBtn.hidden = false; mBtn.classList.add("playing");
+    let v = 0; const f = setInterval(() => { v = Math.min(.8, v + .05); audio.volume = v; if (v >= .8) clearInterval(f); }, 120);
+  }).catch(() => { musicaOn = false; }); // sin archivo de música: sigue sin sonido
+}
+document.addEventListener("pointerdown", startMusic, { once: false });
+document.addEventListener("keydown", startMusic);
+mBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (audio.paused) { audio.play(); mBtn.textContent = "♪"; mBtn.classList.add("playing"); mBtn.setAttribute("aria-label", "Pausar música"); }
+  else { audio.pause(); mBtn.textContent = "✕"; mBtn.classList.remove("playing"); mBtn.setAttribute("aria-label", "Poner música"); }
+});
+mBtn.addEventListener("pointerdown", e => e.stopPropagation());
+
 /* Escena 1 → 2 */
 $("gift").addEventListener("click", () => {
+  startMusic();
   const g = $("gift"); g.classList.remove("idle"); g.classList.add("open");
   burst(120);
   setTimeout(() => go("s1", "s2"), reduce ? 0 : 900);
