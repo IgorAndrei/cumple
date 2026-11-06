@@ -1,0 +1,14 @@
+[Unit]
+Description=micumple.zenti.cl (videos, eventos y fotos)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/micumple
+EnvironmentFile=/etc/micumple.env
+ExecStart=/usr/bin/env node /var/www/micumple/server.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -49,3 +49,18 @@ git clone https://github.com/IgorAndrei/cumple.git ~/cumple && sudo bash ~/cumpl
 ```bash
 sudo bash /var/www/micumple/deploy/actualizar.sh
 ```
+
+## Videos, avisos y fotos (mini servidor)
+
+`server.js` (Node, sin dependencias) guarda el video de la reacción (solo si ella acepta la cámara), registra cuándo abre/revela/acepta, avisa al celular por [ntfy](https://ntfy.sh) y lista las fotos de `public/fotos/`.
+
+Instalar una vez:
+
+```bash
+sudo bash /var/www/micumple/deploy/instalar-api.sh
+```
+
+Imprime la URL secreta del panel (`/panel?clave=...`) y el canal de ntfy al que suscribirte.
+
+Fotos: copiar archivos .jpg/.png a `/var/www/micumple/public/fotos/` (se muestran en orden por nombre: 1.jpg, 2.jpg...).
+Con `?probar` los eventos y videos quedan marcados como prueba.
