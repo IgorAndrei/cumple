@@ -243,8 +243,17 @@ function go(from, to) { $(from).hidden = true; $(to).hidden = false; scrollTo(0,
 /* Música: los navegadores solo dejan sonar audio después de un toque */
 const audio = $("musica"), mBtn = $("musicBtn");
 let musicaOn = false;
+let unlocked = false;
+function unlockHilary() {
+  // iPhone y otros: cada canción tiene que recibir play() durante un toque para poder sonar después
+  if (unlocked) return; unlocked = true;
+  const h = $("hilary"); h.muted = true;
+  h.play().then(() => { h.pause(); h.currentTime = 0; h.muted = false; }).catch(() => { h.muted = false; unlocked = false; });
+}
 function startMusic() {
-  if (musicaOn || !$("s0").hidden) return;
+  if (!$("s0").hidden) return;
+  unlockHilary();
+  if (musicaOn) return;
   musicaOn = true;
   audio.volume = 0;
   audio.play().then(() => {
@@ -256,7 +265,7 @@ document.addEventListener("pointerdown", startMusic, { once: false });
 document.addEventListener("keydown", startMusic);
 mBtn.addEventListener("click", (e) => {
   e.stopPropagation();
-  const cur = $("hilary").currentTime > 0 ? $("hilary") : audio;
+  const cur = done ? $("hilary") : audio;
   if (cur.paused) { cur.play(); mBtn.textContent = "♪"; mBtn.classList.add("playing"); mBtn.setAttribute("aria-label", "Pausar música"); }
   else { cur.pause(); mBtn.textContent = "✕"; mBtn.classList.remove("playing"); mBtn.setAttribute("aria-label", "Poner música"); }
 });
@@ -265,7 +274,7 @@ mBtn.addEventListener("pointerdown", e => e.stopPropagation());
 /* Al revelar: se apaga la primera canción y entra la de Hilary */
 function playHilary() {
   const h = $("hilary");
-  h.volume = 0;
+  h.muted = false; h.currentTime = 0; h.volume = 0;
   h.play().then(() => {
     musicaOn = true; mBtn.hidden = false; mBtn.classList.add("playing"); mBtn.textContent = "♪";
     let v = 0; const f = setInterval(() => {
