@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tienes un regalo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Alguien te preparó algo especial. Ábrelo.">
+<meta property="og:title" content="Tienes un regalo">
+<meta property="og:description" content="Alguien te preparó algo especial. Ábrelo.">
+<meta name="theme-color" content="#ffe3ec">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shrikhand&family=Outfit:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+/* Layout: one centered stage, three scenes (gift → note → scratch ticket), single warm-pink look in any theme */
+:root {
+  --bg: #ffe3ec;
+  --bg-deep: #ffc9da;
+  --ink: #3b0d22;
+  --ink-soft: #7a3a55;
+  --hot: #e0136b;
+  --butter: #ffd84d;
+  --paper: #fffaf3;
+  --foil: #c9c2cf;
+  --display: "Shrikhand", "Georgia", serif;
+  --body: "Outfit", system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  background: radial-gradient(120% 80% at 50% 0%, var(--bg) 40%, var(--bg-deep) 100%) fixed, var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px;
+  overflow-x: hidden;
+}
+main { min-height: 100%; display: grid; place-items: center; }
+.scene { width: 100%; max-width: 440px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; animation: rise .6s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes rise { from { opacity: .0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+h1, h2 { font-family: var(--display); font-weight: 400; margin: 0; text-wrap: balance; line-height: 1.05; color: var(--hot); }
+h1 { font-size: clamp(40px, 12vw, 58px); }
+h2 { font-size: clamp(30px, 9vw, 40px); }
+p { margin: 0; max-width: 34ch; text-wrap: pretty; }
+.hint { font-size: 15px; color: var(--ink-soft); }
+
+/* Gift box */
+.gift { position: relative; width: 190px; height: 190px; border: 0; background: none; padding: 0; cursor: pointer; margin-top: 18px; }
+.gift:focus-visible { outline: 3px dashed var(--hot); outline-offset: 10px; border-radius: 12px; }
+.box, .lid { position: absolute; left: 50%; transform: translateX(-50%); background: var(--hot); border-radius: 10px; }
+.box { bottom: 0; width: 160px; height: 120px; box-shadow: inset 0 -14px 0 rgba(0,0,0,.12); }
+.lid { bottom: 112px; width: 184px; height: 42px; box-shadow: 0 6px 0 rgba(0,0,0,.12); transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
+.box::before, .lid::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 26px; transform: translateX(-50%); background: var(--butter); }
+.bow { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); width: 92px; height: 46px; transition: transform .5s cubic-bezier(.3,1.6,.5,1); }
+.bow::before, .bow::after { content: ""; position: absolute; bottom: 0; width: 44px; height: 44px; border: 10px solid var(--butter); border-radius: 50% 50% 0 50%; }
+.bow::before { left: 0; transform: rotate(10deg); }
+.bow::after { right: 0; transform: scaleX(-1) rotate(10deg); }
+.gift.idle { animation: wiggle 2.6s ease-in-out infinite; }
+@keyframes wiggle { 0%, 80%, 100% { transform: rotate(0); } 84% { transform: rotate(-6deg); } 88% { transform: rotate(6deg); } 92% { transform: rotate(-4deg); } 96% { transform: rotate(3deg); } }
+.gift.open .lid { transform: translate(-50%, -70px) rotate(-14deg); }
+.gift.open .bow { transform: translate(-50%, -76px) rotate(-14deg); }
+
+/* Buttons */
+.btn { font: 700 17px/1 var(--body); color: var(--paper); background: var(--ink); border: 0; border-radius: 999px; padding: 16px 26px; cursor: pointer; box-shadow: 0 4px 0 var(--hot); transition: transform .12s, box-shadow .12s; }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--hot); }
+.btn:focus-visible { outline: 3px solid var(--butter); outline-offset: 3px; }
+
+/* Note */
+.note { background: var(--paper); border-radius: 6px; padding: 28px 24px; box-shadow: 0 14px 30px -12px rgba(59,13,34,.35); transform: rotate(-1.2deg); display: flex; flex-direction: column; gap: 14px; text-align: left; width: 100%; }
+.note p { max-width: none; }
+.sig { font-family: var(--display); color: var(--hot); font-size: 22px; }
+
+/* Ticket */
+.ticket-wrap { position: relative; width: 100%; aspect-ratio: 5 / 7; max-width: 100%; }
+.ticket { position: absolute; inset: 0; background: var(--paper); border-radius: 18px; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; box-shadow: 0 18px 40px -16px rgba(59,13,34,.45); text-align: left; }
+.t-head { background: var(--hot); color: var(--paper); padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+.t-body { padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.t-body .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.t-body .artist { font-family: var(--display); font-size: clamp(42px, 13vw, 60px); line-height: .95; color: var(--hot); }
+.t-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 10px; }
+.t-grid dt { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
+.t-grid dd { margin: 2px 0 0; font-weight: 700; font-size: 17px; }
+.t-stub { border-top: 2px dashed var(--bg-deep); padding: 14px 22px 18px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); position: relative; }
+.t-stub::before, .t-stub::after { content: ""; position: absolute; top: -13px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-deep); }
+.t-stub::before { left: -12px; } .t-stub::after { right: -12px; }
+.barcode { height: 30px; width: 110px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px); }
+#scratch { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 18px; touch-action: none; cursor: grab; transition: opacity .8s; }
+#scratch.gone { opacity: 0; pointer-events: none; }
+
+/* Countdown */
+.count { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; }
+.count div { background: var(--paper); border-radius: 10px; padding: 12px 4px; display: flex; flex-direction: column; gap: 2px; }
+.count b { font-family: var(--mono); font-weight: 500; font-size: 26px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.count span { font-size: 11px; font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 20; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main>
+  <!-- Escena 0: todavía no es el día -->
+  <section class="scene" id="s0" hidden>
+    <div class="eyebrow">Shhh</div>
+    <h2>Todavía no</h2>
+    <p class="hint">Esta sorpresa se abre el 25 de noviembre. Vuelve ese día.</p>
+    <div class="count">
+      <div><b id="lk-d">0</b><span>días</span></div>
+      <div><b id="lk-h">0</b><span>horas</span></div>
+      <div><b id="lk-m">0</b><span>min</span></div>
+      <div><b id="lk-s">0</b><span>seg</span></div>
+    </div>
+  </section>
+
+  <!-- Escena 1: el regalo -->
+  <section class="scene" id="s1">
+    <div class="eyebrow">25 de noviembre</div>
+    <h1>¡Feliz cumpleaños, <span class="js-name">mi amor</span>!</h1>
+    <p class="hint">Tengo algo para ti. Toca el regalo.</p>
+    <button class="gift idle" id="gift" aria-label="Abrir el regalo">
+      <span class="bow"></span><span class="lid"></span><span class="box"></span>
+    </button>
+  </section>
+
+  <!-- Escena 2: la nota -->
+  <section class="scene" id="s2" hidden>
+    <div class="note">
+      <div class="eyebrow">Antes de tu regalo</div>
+      <p id="msg">Hoy celebro que existes. Gracias por cada risa, cada abrazo y cada día a tu lado. Me acordé de algo que una vez me dijiste que soñabas con hacer, y quise que se hiciera realidad.</p>
+      <div class="sig">— <span id="from">Igor</span></div>
+    </div>
+    <button class="btn" id="toTicket">Ver mi sorpresa</button>
+  </section>
+
+  <!-- Escena 3: el ticket -->
+  <section class="scene" id="s3" hidden>
+    <h2 id="s3title">Raspa tu regalo</h2>
+    <p class="hint" id="s3hint">Pasa el dedo por la tarjeta plateada.</p>
+    <div class="ticket-wrap">
+      <article class="ticket" aria-label="Entrada al concierto">
+        <div class="t-head"><span>Admit two</span><span>Entrada</span></div>
+        <div class="t-body">
+          <div class="kicker">Vamos a ver en vivo a</div>
+          <div class="artist">Hilary Duff</div>
+          <dl class="t-grid">
+            <div><dt>Fecha</dt><dd>Vie 20 ago 2027</dd></div>
+            <div><dt>Quiénes</dt><dd>Tú y yo</dd></div>
+            <div id="placeRow"><dt>Lugar</dt><dd id="place"></dd></div>
+            <div><dt>Ocasión</dt><dd>Tu cumple</dd></div>
+          </dl>
+        </div>
+        <div class="t-stub"><span>Nº 2508·2027</span><span class="barcode" aria-hidden="true"></span></div>
+      </article>
+      <canvas id="scratch" aria-label="Capa para raspar"></canvas>
+    </div>
+    <button class="btn" id="reveal" hidden>Mostrar todo</button>
+    <div id="after" hidden style="width:100%;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <div class="eyebrow">Falta para el concierto</div>
+      <div class="count" aria-live="polite">
+        <div><b id="cd-d">0</b><span>días</span></div>
+        <div><b id="cd-h">0</b><span>horas</span></div>
+        <div><b id="cd-m">0</b><span>min</span></div>
+        <div><b id="cd-s">0</b><span>seg</span></div>
+      </div>
+      <p class="hint">Te amo. Feliz cumpleaños.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ====== PERSONALIZA AQUÍ ====== */
+const NOMBRE = "mi amor";          // su nombre o apodo
+const DE = "Igor";                 // quién firma
+const LUGAR = "";                  // ej: "Movistar Arena" (déjalo vacío para ocultarlo)
+const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0); // 20 ago 2027, 21:00
+const ABRE = new Date(2026, 10, 25, 0, 0, 0);      // se desbloquea el 25 nov 2026 (agrega ?probar a la URL para verla antes)
+/* ============================== */
+
+const $ = (id) => document.getElementById(id);
+document.querySelectorAll(".js-name").forEach(e => e.textContent = NOMBRE);
+$("from").textContent = DE;
+if (LUGAR) $("place").textContent = LUGAR; else $("placeRow").remove();
+
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* Confetti */
+const cv = $("confetti"), cx = cv.getContext("2d");
+let bits = [], raf = null;
+function sizeConfetti() { cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
+sizeConfetti(); addEventListener("resize", sizeConfetti);
+function burst(n = 160) {
+  if (reduce) return;
+  const cols = ["#e0136b", "#ffd84d", "#3b0d22", "#ff8fb8", "#fffaf3"];
+  for (let i = 0; i < n; i++) bits.push({
+    x: innerWidth / 2, y: innerHeight * .45,
+    vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4,
+    w: 6 + Math.random() * 6, h: 8 + Math.random() * 8,
+    r: Math.random() * 6, vr: (Math.random() - .5) * .3,
+    c: cols[i % cols.length], life: 0
+  });
+  if (!raf) tick();
+}
+function tick() {
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  bits.forEach(b => { b.vy += .32; b.vx *= .99; b.x += b.vx; b.y += b.vy; b.r += b.vr; b.life++;
+    cx.save(); cx.translate(b.x, b.y); cx.rotate(b.r); cx.fillStyle = b.c; cx.fillRect(-b.w/2, -b.h/2, b.w, b.h); cx.restore(); });
+  bits = bits.filter(b => b.y < innerHeight + 40 && b.life < 400);
+  raf = bits.length ? requestAnimationFrame(tick) : (cx.clearRect(0,0,innerWidth,innerHeight), null);
+}
+
+function go(from, to) { $(from).hidden = true; $(to).hidden = false; scrollTo(0, 0); }
+
+/* Escena 1 → 2 */
+$("gift").addEventListener("click", () => {
+  const g = $("gift"); g.classList.remove("idle"); g.classList.add("open");
+  burst(120);
+  setTimeout(() => go("s1", "s2"), reduce ? 0 : 900);
+});
+
+/* Escena 2 → 3 */
+$("toTicket").addEventListener("click", () => { go("s2", "s3"); requestAnimationFrame(setupScratch); });
+
+/* Raspadita */
+let done = false;
+function setupScratch() {
+  const c = $("scratch"), r = c.getBoundingClientRect(), dpr = devicePixelRatio || 1;
+  c.width = r.width * dpr; c.height = r.height * dpr;
+  const g = c.getContext("2d"); g.scale(dpr, dpr);
+  const grad = g.createLinearGradient(0, 0, r.width, r.height);
+  grad.addColorStop(0, "#d9d3de"); grad.addColorStop(.5, "#b9b1c0"); grad.addColorStop(1, "#ddd6e2");
+  g.fillStyle = grad; g.fillRect(0, 0, r.width, r.height);
+  g.fillStyle = "rgba(255,255,255,.18)";
+  for (let i = 0; i < 400; i++) g.fillRect(Math.random() * r.width, Math.random() * r.height, 2, 2);
+  g.fillStyle = "#3b0d22"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.font = "28px Shrikhand, Georgia, serif"; g.fillText("Raspa aquí", r.width / 2, r.height / 2 - 14);
+  g.font = "13px 'DM Mono', monospace"; g.fillText("✦ tu regalo está debajo ✦", r.width / 2, r.height / 2 + 22);
+  g.globalCompositeOperation = "destination-out";
+  g.lineCap = g.lineJoin = "round"; g.lineWidth = 46;
+
+  let down = false, last = null, strokes = 0;
+  const pt = e => { const b = c.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; };
+  c.addEventListener("pointerdown", e => { down = true; last = pt(e); c.setPointerCapture(e.pointerId); scratch(last); });
+  c.addEventListener("pointermove", e => { if (!down) return; const p = pt(e); scratch(p); last = p; });
+  addEventListener("pointerup", () => { down = false; });
+  function scratch(p) {
+    g.beginPath(); g.moveTo(last.x, last.y); g.lineTo(p.x + .1, p.y + .1); g.stroke();
+    if (++strokes % 12 === 0) check();
+    if (strokes === 30) $("reveal").hidden = false;
+  }
+  function check() {
+    const d = g.getImageData(0, 0, c.width, c.height).data; let clear = 0;
+    for (let i = 3; i < d.length; i += 64) if (d[i] === 0) clear++;
+    if (clear / (d.length / 64) > .5) finish();
+  }
+}
+function finish() {
+  if (done) return; done = true;
+  $("scratch").classList.add("gone");
+  $("reveal").hidden = true;
+  $("s3title").textContent = "¡Nos vamos a ver a Hilary!";
+  $("s3hint").textContent = "Uno de tus sueños, el 20 de agosto. Y voy contigo.";
+  $("after").hidden = false;
+  burst(220); setTimeout(() => burst(160), 700);
+  countdown(); setInterval(countdown, 1000);
+}
+$("reveal").addEventListener("click", finish);
+
+function split(ms) {
+  ms = Math.max(0, ms);
+  const d = Math.floor(ms / 864e5); ms -= d * 864e5;
+  const h = Math.floor(ms / 36e5); ms -= h * 36e5;
+  const m = Math.floor(ms / 6e4); ms -= m * 6e4;
+  return [d, h, m, Math.floor(ms / 1000)];
+}
+/* Candado hasta el cumpleaños */
+const probar = new URLSearchParams(location.search).has("probar");
+if (!probar && new Date() < ABRE) {
+  $("s1").hidden = true; $("s0").hidden = false;
+  const lk = () => {
+    const [d, h, m, s] = split(ABRE - new Date());
+    $("lk-d").textContent = d; $("lk-h").textContent = h; $("lk-m").textContent = m; $("lk-s").textContent = s;
+    if (new Date() >= ABRE) location.reload();
+  };
+  lk(); setInterval(lk, 1000);
+}
+
+function countdown() {
+  const [d, h, m, s] = split(CONCIERTO - new Date());
+  $("cd-d").textContent = d; $("cd-h").textContent = h; $("cd-m").textContent = m; $("cd-s").textContent = s;
+}
+</script>
+</body>
+</html>
