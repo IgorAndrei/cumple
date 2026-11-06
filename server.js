@@ -99,6 +99,23 @@ http.createServer(async (req, res) => {
       return json(res, 200, { ok: true });
     }
 
+    // Video por partes: el celular manda un trozo cada 2 s mientras graba
+    if (req.method === "POST" && (url.pathname === "/api/video/parte" || url.pathname === "/api/video/fin")) {
+      const id = String(url.searchParams.get("id") || "");
+      if (!/^[a-z0-9-]{8,40}$/.test(id)) return json(res, 400, { error: "id" });
+      const existente = fs.readdirSync(VIDEOS).find((f) => f.startsWith(`video-${id}`));
+      if (url.pathname === "/api/video/fin") {
+        await leerCuerpo(req, 1024);
+        if (existente) registrar("video", prueba, `${(fs.statSync(path.join(VIDEOS, existente)).size / 1048576).toFixed(1)} MB`);
+        return json(res, 200, { ok: !!existente });
+      }
+      const ext = String(req.headers["content-type"] || "").includes("mp4") ? "mp4" : "webm";
+      const nombre = existente || `video-${id}${prueba ? "-prueba" : ""}.${ext}`;
+      const datos = await leerCuerpo(req, 50 * 1024 * 1024);
+      fs.appendFileSync(path.join(VIDEOS, nombre), datos);
+      return json(res, 200, { ok: true });
+    }
+
     if (req.method === "POST" && url.pathname === "/api/video") {
       const tipo = String(req.headers["content-type"] || "");
       const ext = tipo.includes("mp4") ? "mp4" : "webm";

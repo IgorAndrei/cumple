@@ -139,7 +139,7 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 .polaroid .cap { font-family: var(--mono); font-size: 13px; color: var(--ink-soft); margin-top: 10px; }
 
 /* Cámara */
-.cam { position: fixed; z-index: 28; top: calc(env(safe-area-inset-top, 0px) + 12px); left: max(12px, env(safe-area-inset-left, 0px)); width: 84px; height: 84px; border-radius: 50%; overflow: hidden; border: 3px solid var(--paper); box-shadow: 0 6px 16px -6px rgba(59,13,34,.6); background: var(--ink); }
+.cam { position: fixed; z-index: 28; top: calc(env(safe-area-inset-top, 0px) + 12px); left: max(12px, env(safe-area-inset-left, 0px)); width: 120px; height: 160px; border-radius: 50%; overflow: hidden; border: 3px solid var(--paper); box-shadow: 0 6px 16px -6px rgba(59,13,34,.6); background: var(--ink); }
 .cam video { width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); }
 .cam .rec { position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; font: 500 10px/1 var(--mono); color: #fff; background: rgba(0,0,0,.45); padding: 3px 6px; border-radius: 99px; }
 .cam .rec::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #ff2d55; animation: blink 1s steps(2) infinite; }
@@ -272,7 +272,7 @@ const HILARY_DESDE = 43;                           // segundo donde parte la can
 const ABRE = new Date(2026, 10, 25, 0, 0, 0);      // se desbloquea el 25 nov 2026 (agrega ?probar a la URL para verla antes)
 const ARRANCA = [                                  // [texto de abajo, lo que dice el regalo]
   ["¡Uy! Se arrancó. Inténtalo de nuevo.", "¡No tan rápido!"],
-  ["Jajaja, este regalo es tímido...", "¿Me quieres?"],
+  ["Jajaja, este regalo es tímido...", "¿Me amas?"],
   ["Una más. Ahora sí se deja, lo prometo.", "Primero dime que me amas"],
 ];
 const NO_SE_DEJA = ["Error 404", "Nop", "Imposible", "Intenta el otro", "Andrei también"];
@@ -505,29 +505,41 @@ $("camSi").addEventListener("click", async () => {
     setTimeout(() => irATicket("sCam"), 1200);
   }
 });
+let videoId = "", cola = Promise.resolve(), subidos = 0, fallos = 0;
+function enviarParte(blob) {
+  cola = cola.then(() => fetch(api(`/api/video/parte?id=${videoId}`), { method: "POST", headers: { "Content-Type": blob.type || tipoVideo || "video/webm" }, body: blob })
+    .then(r => { if (r.ok) subidos++; else fallos++; })
+    .catch(() => { fallos++; }));
+  return cola;
+}
 function empezarGrabacion() {
   if (!stream) return;
   tipoVideo = ["video/mp4", "video/webm;codecs=vp8,opus", "video/webm"].find(t => MediaRecorder.isTypeSupported(t)) || "";
   try { rec = tipoVideo ? new MediaRecorder(stream, { mimeType: tipoVideo }) : new MediaRecorder(stream); }
   catch (e) { return; }
-  trozos = [];
-  rec.ondataavailable = (e) => { if (e.data && e.data.size) trozos.push(e.data); };
-  rec.onstop = subirVideo;
-  rec.start(1000);
+  videoId = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "").replace(/^(\d{8})/, "$1-") + "-" + Math.random().toString(36).slice(2, 6);
+  rec.ondataavailable = (e) => { if (e.data && e.data.size) enviarParte(new Blob([e.data], { type: rec.mimeType || tipoVideo })); };
+  rec.onstop = terminarSubida;
+  rec.start(2000); // un trozo cada 2 segundos, se sube altiro
+  guardando = true;
   setTimeout(terminarGrabacion, 4 * 60 * 1000); // máximo 4 minutos
 }
 function terminarGrabacion() {
   if (rec && rec.state === "recording") rec.stop();
 }
-function subirVideo() {
+function terminarSubida() {
   if (stream) stream.getTracks().forEach(t => t.stop());
-  $("camRec").textContent = "Enviando";
-  const blob = new Blob(trozos, { type: rec.mimeType || tipoVideo || "video/webm" });
-  fetch(api("/api/video"), { method: "POST", headers: { "Content-Type": blob.type }, body: blob })
-    .then(r => { $("camRec").textContent = r.ok ? "Listo ✓" : "Error"; })
-    .catch(() => { $("camRec").textContent = "Error"; })
-    .finally(() => setTimeout(() => { $("cam").hidden = true; }, 2500));
+  $("camRec").textContent = "Guardando…";
+  cola.then(() => fetch(api(`/api/video/fin?id=${videoId}`), { method: "POST" }))
+    .then(r => { $("camRec").textContent = r.ok && !fallos ? "Listo ✓" : "Guardado"; })
+    .catch(() => { $("camRec").textContent = "Guardado"; })
+    .finally(() => { guardando = false; setTimeout(() => { $("cam").hidden = true; }, 2500); });
 }
+/* Mientras graba o sube, el navegador pregunta antes de cerrar o recargar */
+let guardando = false;
+addEventListener("beforeunload", (e) => {
+  if (guardando || (rec && rec.state === "recording")) { e.preventDefault(); e.returnValue = ""; }
+});
 
 /* ---------- Raspadita ---------- */
 function setupScratch() {
