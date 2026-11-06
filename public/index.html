@@ -82,7 +82,7 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 /* Note */
 .note { background: var(--paper); border-radius: 6px; padding: 28px 24px; box-shadow: 0 14px 30px -12px rgba(59,13,34,.35); transform: rotate(-1.2deg); display: flex; flex-direction: column; gap: 14px; text-align: left; width: 100%; }
 .note p { max-width: none; }
-.gif-nota { width: 100%; max-height: 220px; object-fit: cover; border-radius: 4px; border: 3px solid var(--hot); box-shadow: 3px 3px 0 var(--butter); }
+.gif-nota { width: 100%; max-width: 340px; max-height: 240px; object-fit: cover; border-radius: 4px; border: 3px solid var(--hot); box-shadow: 3px 3px 0 var(--butter); }
 .sig { font-family: var(--display); color: var(--hot); font-size: 22px; }
 
 /* Ticket */
@@ -222,7 +222,6 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
   <!-- Escena 2: la nota -->
   <section class="scene" id="s2" hidden>
     <div class="note">
-      <img id="gifNota" class="gif-nota" src="gif1.gif" alt="" hidden>
       <div class="eyebrow">Antes de tu regalo</div>
       <p id="msg">Te tengo algo que no te vas a esperar. Respira hondo, prepárate y cuando estés lista… sigue. Feliz cumpleaños, te amo.</p>
       <div class="sig">— <span id="from">Andrei</span></div>
@@ -310,6 +309,7 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
     </div>
     <button class="btn" id="reveal" hidden>Mostrar todo</button>
     <div id="after" hidden style="width:100%;display:flex;flex-direction:column;gap:14px;align-items:center">
+      <img id="gifNota" class="gif-nota" src="gif1.gif" alt="" hidden>
       <button class="btn" id="acepto">Acepto la cita</button>
       <p class="hint" id="aceptoMsg" aria-live="polite"></p>
       <div class="eyebrow">Falta para el concierto</div>
@@ -349,7 +349,7 @@ document.querySelectorAll(".js-name").forEach(e => e.textContent = NOMBRE);
 document.querySelectorAll(".js-from").forEach(e => e.textContent = DE);
 $("from").textContent = DE;
 $("place").textContent = LUGAR;
-/* GIFs opcionales (public/gif1.gif en la nota, public/gif2.gif en la entrada); si no existen no se muestran */
+/* GIFs opcionales (public/gif1.gif sobre "Acepto la cita", public/gif2.gif en la entrada); si no existen no se muestran */
 $("gifNota").addEventListener("load", () => { $("gifNota").hidden = false; });
 $("lizzieGif").addEventListener("load", () => { $("lizzieGif").hidden = false; $("artSvg").remove(); });
 /* QR decorativo (no es un código real) */
