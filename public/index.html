@@ -583,14 +583,39 @@ function irACamara(desde) {
 }
 function irATicket(desde) { go(desde, "s3"); requestAnimationFrame(setupScratch); empezarGrabacion(); }
 $("camNo").addEventListener("click", () => irATicket("sCam"));
+let recStream = null, actx = null;
+/* Mezcla: su voz + la canción que está sonando, directo en el video */
+function mezclarAudio(camara) {
+  if (!actx) return camara;
+  try {
+    const dest = actx.createMediaStreamDestination();
+    if (camara.getAudioTracks().length) {
+      const voz = actx.createGain(); voz.gain.value = 1.3;          // su voz/gritos, más fuerte
+      actx.createMediaStreamSource(camara).connect(voz).connect(dest);
+    }
+    const fondo = actx.createGain(); fondo.gain.value = 0.5;         // canción de fondo
+    fondo.connect(dest);
+    for (const el of [audio, $("hilary")]) {
+      const src = actx.createMediaElementSource(el);
+      src.connect(actx.destination);  // se sigue escuchando por el parlante
+      src.connect(fondo);             // y queda grabada en el video
+    }
+    return new MediaStream([...camara.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  } catch (e) { return camara; }
+}
 $("camSi").addEventListener("click", async () => {
   $("camMsg").textContent = "Tu teléfono te va a pedir permiso. Toca Permitir.";
+  // El mezclador de audio se crea durante el toque (iPhone lo exige)
+  try { const AC = window.AudioContext || window.webkitAudioContext; if (AC && !actx) { actx = new AC(); actx.resume(); } } catch (e) { actx = null; }
   try {
     // Imagen completa del sensor (4:3), sin recortar: se ve más abierta
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 }, aspectRatio: { ideal: 4 / 3 } }, audio: true });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 960 }, aspectRatio: { ideal: 4 / 3 } },
+      // sin "modo llamada": así se escuchan los gritos y la música no suena tapada
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
     // Si la cámara permite alejar el zoom, lo dejamos al mínimo
     const vt = stream.getVideoTracks()[0];
     try { const cap = vt.getCapabilities ? vt.getCapabilities() : {}; if (cap.zoom && cap.zoom.min < (vt.getSettings().zoom || 1)) await vt.applyConstraints({ advanced: [{ zoom: cap.zoom.min }] }); } catch (e) {}
+    recStream = mezclarAudio(stream);
     $("camVideo").srcObject = stream; $("cam").hidden = false;
     irATicket("sCam");
   } catch (e) {
@@ -608,7 +633,8 @@ function enviarParte(blob) {
 function empezarGrabacion() {
   if (!stream) return;
   tipoVideo = ["video/mp4", "video/webm;codecs=vp8,opus", "video/webm"].find(t => MediaRecorder.isTypeSupported(t)) || "";
-  try { rec = tipoVideo ? new MediaRecorder(stream, { mimeType: tipoVideo }) : new MediaRecorder(stream); }
+  const fuente = recStream || stream;
+  try { rec = tipoVideo ? new MediaRecorder(fuente, { mimeType: tipoVideo }) : new MediaRecorder(fuente); }
   catch (e) { return; }
   videoId = new Date().toISOString().slice(0, 19).replace(/[-:T]/g, "").replace(/^(\d{8})/, "$1-") + "-" + Math.random().toString(36).slice(2, 6);
   rec.ondataavailable = (e) => { if (e.data && e.data.size) enviarParte(new Blob([e.data], { type: rec.mimeType || tipoVideo })); };
