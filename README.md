@@ -21,12 +21,19 @@ El mensaje de la nota está en `<p id="msg">`.
 
 ## Música
 
-La página reproduce `public/musica.mp3` (en loop) desde el primer toque. El archivo no se sube al repo; se copia directo al servidor:
+Dos canciones, en loop:
+
+- `public/musica.mp3`: suena desde el primer toque (canción neutra, para no delatar la sorpresa).
+- `public/hilary.mp3`: reemplaza a la primera cuando se revela la entrada.
+
+Los archivos no se suben al repo; se copian directo al servidor:
 
 ```bash
 scp cancion.mp3 ubuntu@51.222.29.21:/tmp/musica.mp3
 sudo mv /tmp/musica.mp3 /var/www/micumple/public/musica.mp3
 ```
+
+(igual para `hilary.mp3`)
 
 ## Instalar en el VPS
 
