@@ -10,9 +10,9 @@ Página sorpresa de cumpleaños: un regalo que se abre, una nota y una tarjeta p
 En `public/index.html`, al inicio del `<script>`:
 
 ```js
-const NOMBRE = "mi amor";
-const DE = "Igor";
-const LUGAR = "";
+const NOMBRE = "Cata";
+const DE = "Andrei";
+const LUGAR = "Movistar Arena";
 const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0);
 const ABRE = new Date(2026, 10, 25, 0, 0, 0);
 ```
