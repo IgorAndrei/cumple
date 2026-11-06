@@ -85,19 +85,36 @@ p { margin: 0; max-width: 34ch; text-wrap: pretty; }
 .sig { font-family: var(--display); color: var(--hot); font-size: 22px; }
 
 /* Ticket */
-.ticket-wrap { position: relative; width: 100%; aspect-ratio: 5 / 7; max-width: 100%; }
-.ticket { position: absolute; inset: 0; background: var(--paper); border-radius: 18px; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; box-shadow: 0 18px 40px -16px rgba(59,13,34,.45); text-align: left; }
-.t-head { background: var(--hot); color: var(--paper); padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
-.t-body { padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
-.t-body .kicker { font-family: var(--mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
-.t-body .artist { font-family: var(--display); font-size: clamp(42px, 13vw, 60px); line-height: .95; color: var(--hot); }
-.t-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-top: 10px; }
-.t-grid dt { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); }
-.t-grid dd { margin: 2px 0 0; font-weight: 700; font-size: 17px; }
-.t-stub { border-top: 2px dashed var(--bg-deep); padding: 14px 22px 18px; display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); position: relative; }
+.ticket-wrap { position: relative; width: 100%; max-width: 100%; }
+.ticket { position: relative; background: var(--paper); border-radius: 18px; overflow: hidden; box-shadow: 0 18px 40px -16px rgba(59,13,34,.45); text-align: left; }
+.t-head { background: linear-gradient(100deg, #7b2ff7 0%, var(--hot) 55%, #ff7a59 100%); color: #fff; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; font: 500 11px/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.t-hero { position: relative; padding: 18px 18px 8px; background:
+  radial-gradient(circle at 85% 20%, rgba(255,216,77,.55) 0 18%, transparent 19%),
+  radial-gradient(circle at 10% 90%, rgba(255,143,184,.35) 0 22%, transparent 23%),
+  var(--paper); display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.t-hero .kicker { font: 500 11px/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+.t-hero .artist { font-family: var(--display); font-size: clamp(38px, 11.5vw, 54px); line-height: .92; color: var(--hot); margin: 4px 0 2px; text-shadow: 2px 2px 0 var(--butter); }
+.t-hero .tour { font-weight: 700; font-size: 14px; color: var(--ink); }
+.t-art { width: 96px; height: 96px; border-radius: 50%; overflow: hidden; border: 3px solid var(--hot); background: #fff0f6; display: grid; place-items: center; box-shadow: 3px 3px 0 var(--butter); }
+.t-art img, .t-art svg { width: 100%; height: 100%; object-fit: cover; }
+.t-deco { position: absolute; pointer-events: none; }
+.t-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin: 10px 18px 0; border: 1.5px solid var(--ink); border-radius: 10px; overflow: hidden; }
+.t-grid > div { padding: 8px 10px; border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); min-width: 0; }
+.t-grid > div:nth-child(3n) { border-right: 0; }
+.t-grid > div.wide { grid-column: span 2; }
+.t-grid > div:nth-last-child(-n+2) { border-bottom: 0; }
+.t-grid dt { font: 500 9.5px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+.t-grid dd { margin: 3px 0 0; font-weight: 700; font-size: 15px; line-height: 1.15; }
+.t-grid dd.big { font-size: 22px; color: var(--hot); }
+.t-who { margin: 10px 18px 0; display: flex; justify-content: space-between; gap: 10px; font: 500 11px/1.3 var(--mono); color: var(--ink-soft); text-transform: uppercase; letter-spacing: .08em; }
+.t-who b { color: var(--ink); font-family: var(--body); font-size: 14px; letter-spacing: 0; text-transform: none; }
+.t-stub { margin-top: 14px; border-top: 2px dashed var(--bg-deep); padding: 14px 18px 16px; display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; position: relative; }
 .t-stub::before, .t-stub::after { content: ""; position: absolute; top: -13px; width: 24px; height: 24px; border-radius: 50%; background: var(--bg-deep); }
 .t-stub::before { left: -12px; } .t-stub::after { right: -12px; }
-.barcode { height: 30px; width: 110px; background: repeating-linear-gradient(90deg, var(--ink) 0 2px, transparent 2px 4px, var(--ink) 4px 5px, transparent 5px 8px, var(--ink) 8px 11px, transparent 11px 12px); }
+#qr { width: 92px; height: 92px; image-rendering: pixelated; background: #fff; padding: 4px; border-radius: 6px; border: 1px solid var(--bg-deep); }
+.t-fine { font: 400 10px/1.4 var(--mono); color: var(--ink-soft); }
+.t-fine b { display: block; font: 700 12px/1.3 var(--body); color: var(--ink); margin-bottom: 4px; }
+.t-num { font: 500 10px/1 var(--mono); letter-spacing: .12em; color: var(--ink-soft); margin-top: 6px; }
 #scratch { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 18px; touch-action: none; cursor: grab; transition: opacity .8s; }
 #scratch.gone { opacity: 0; pointer-events: none; }
 
@@ -158,6 +175,10 @@ body.grabando main { padding-top: 172px; }
 </head>
 <body>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mariposa" viewBox="0 0 40 40"><g fill="#e0136b"><path d="M20 20 C 10 4, 0 8, 4 18 C 6 24, 14 24, 20 20Z"/><path d="M20 20 C 30 4, 40 8, 36 18 C 34 24, 26 24, 20 20Z"/></g><g fill="#ff8fb8"><path d="M20 21 C 12 26, 8 34, 14 35 C 18 36, 20 28, 20 21Z"/><path d="M20 21 C 28 26, 32 34, 26 35 C 22 36, 20 28, 20 21Z"/></g><rect x="19" y="12" width="2" height="20" rx="1" fill="#3b0d22"/></symbol>
+  <symbol id="estrella" viewBox="0 0 40 40"><path d="M20 2 L24 16 L38 20 L24 24 L20 38 L16 24 L2 20 L16 16Z" fill="#ffd84d" stroke="#3b0d22" stroke-width="1.5"/></symbol>
+</svg>
 <canvas id="confetti" aria-hidden="true"></canvas>
 <audio id="musica" src="musica.mp3" loop preload="auto"></audio>
 <audio id="hilary" src="hilary.mp3" loop preload="auto"></audio>
@@ -242,19 +263,47 @@ body.grabando main { padding-top: 172px; }
     <h2 id="s3title">Raspa tu regalo</h2>
     <p class="hint" id="s3hint">Pasa el dedo por la tarjeta plateada.</p>
     <div class="ticket-wrap">
-      <article class="ticket" aria-label="Entrada al concierto">
-        <div class="t-head"><span>Admit two</span><span>Entrada</span></div>
-        <div class="t-body">
-          <div class="kicker">Vamos a ver en vivo a</div>
-          <div class="artist">Hilary Duff</div>
-          <dl class="t-grid">
-            <div><dt>Fecha</dt><dd>Vie 20 ago 2027</dd></div>
-            <div><dt>Quiénes</dt><dd>Tú y yo</dd></div>
-            <div id="placeRow"><dt>Lugar</dt><dd id="place"></dd></div>
-            <div><dt>Ocasión</dt><dd>Tu cumple</dd></div>
-          </dl>
+      <article class="ticket" aria-label="Entrada al concierto de Hilary Duff">
+        <div class="t-head"><span>Pase de cumpleaños</span><span>Admite 2</span></div>
+        <div class="t-hero">
+          <svg class="t-deco" style="left:52%;top:8px;width:26px" viewBox="0 0 40 40" aria-hidden="true"><use href="#mariposa"/></svg>
+          <svg class="t-deco" style="left:6px;bottom:2px;width:18px" viewBox="0 0 40 40" aria-hidden="true"><use href="#estrella"/></svg>
+          <div>
+            <div class="kicker">En vivo en Santiago</div>
+            <div class="artist">Hilary Duff</div>
+            <div class="tour">Un sueño hecho realidad ✦</div>
+          </div>
+          <div class="t-art" id="tArt">
+            <img id="lizzieGif" src="lizzie.gif" alt="" hidden>
+            <svg id="artSvg" viewBox="0 0 100 100" aria-hidden="true">
+              <rect width="100" height="100" fill="#ffe3ec"/>
+              <circle cx="50" cy="56" r="30" fill="#ffd84d"/>
+              <g transform="translate(50 50) rotate(-18)">
+                <rect x="-6" y="2" width="12" height="34" rx="5" fill="#3b0d22"/>
+                <circle cx="0" cy="-6" r="13" fill="#e0136b"/>
+                <path d="M-9 -12 h18 M-11 -6 h22 M-9 0 h18" stroke="#ff8fb8" stroke-width="2"/>
+              </g>
+              <use href="#mariposa" x="8" y="8" width="26" height="26"/>
+              <use href="#mariposa" x="68" y="64" width="22" height="22"/>
+              <use href="#estrella" x="70" y="10" width="16" height="16"/>
+              <use href="#estrella" x="12" y="70" width="12" height="12"/>
+            </svg>
+          </div>
         </div>
-        <div class="t-stub"><span>Nº 2508·2027</span><span class="barcode" aria-hidden="true"></span></div>
+        <dl class="t-grid">
+          <div class="wide"><dt>Fecha</dt><dd>Viernes 20 ago 2027</dd></div>
+          <div><dt>Pase</dt><dd>Doble</dd></div>
+          <div class="wide"><dt>Recinto</dt><dd id="place">Santander Arena</dd></div>
+          <div><dt>Ocasión</dt><dd>Tu cumple</dd></div>
+          <div><dt>Sector</dt><dd>Platea Zafiro</dd></div>
+          <div><dt>Fila</dt><dd class="big">P</dd></div>
+          <div><dt>Asientos</dt><dd class="big">109·110</dd></div>
+        </dl>
+        <div class="t-who"><span>Titular<br><b class="js-name">Isis</b></span><span style="text-align:right">Acompañante<br><b class="js-from">Andrei</b></span></div>
+        <div class="t-stub">
+          <canvas id="qr" width="29" height="29" aria-hidden="true"></canvas>
+          <div class="t-fine"><b>Válido para cumplir un sueño</b>Incluye cantar a todo pulmón, llorar un poquito y abrazos ilimitados. No transferible. No caduca.<div class="t-num">Nº 2508·2027·109</div></div>
+        </div>
       </article>
       <canvas id="scratch" aria-label="Capa para raspar"></canvas>
     </div>
@@ -278,7 +327,7 @@ body.grabando main { padding-top: 172px; }
 /* ====== PERSONALIZA AQUÍ ====== */
 const NOMBRE = "Isis";                             // su nombre o apodo
 const DE = "Andrei";                               // quién firma
-const LUGAR = "Movistar Arena";                    // déjalo vacío para ocultarlo
+const LUGAR = "Santander Arena";                   // recinto
 const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0); // 20 ago 2027, 21:00
 const HILARY_DESDE = 43;                           // segundo donde parte la canción de Hilary
 const ABRE = new Date(2026, 10, 25, 0, 0, 0);      // se desbloquea el 25 nov 2026 (agrega ?probar a la URL para verla antes)
@@ -298,7 +347,18 @@ const $ = (id) => document.getElementById(id);
 document.querySelectorAll(".js-name").forEach(e => e.textContent = NOMBRE);
 document.querySelectorAll(".js-from").forEach(e => e.textContent = DE);
 $("from").textContent = DE;
-if (LUGAR) $("place").textContent = LUGAR; else $("placeRow").remove();
+$("place").textContent = LUGAR;
+/* GIF opcional (public/lizzie.gif); si no existe se ve el dibujo */
+$("lizzieGif").addEventListener("load", () => { $("lizzieGif").hidden = false; $("artSvg").remove(); });
+/* QR decorativo (no es un código real) */
+(() => {
+  const c = $("qr").getContext("2d"), n = 29; let seed = 2508;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  c.fillStyle = "#fff"; c.fillRect(0, 0, n, n); c.fillStyle = "#3b0d22";
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) if (rnd() > .52) c.fillRect(x, y, 1, 1);
+  const finder = (x, y) => { c.fillStyle = "#fff"; c.fillRect(x - 1, y - 1, 9, 9); c.fillStyle = "#3b0d22"; c.fillRect(x, y, 7, 7); c.fillStyle = "#fff"; c.fillRect(x + 1, y + 1, 5, 5); c.fillStyle = "#e0136b"; c.fillRect(x + 2, y + 2, 3, 3); };
+  finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+})();
 
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const probar = new URLSearchParams(location.search).has("probar");

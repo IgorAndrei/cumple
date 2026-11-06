@@ -12,7 +12,7 @@ En `public/index.html`, al inicio del `<script>`:
 ```js
 const NOMBRE = "Isis";
 const DE = "Andrei";
-const LUGAR = "Movistar Arena";
+const LUGAR = "Santander Arena";
 const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0);
 const ABRE = new Date(2026, 10, 25, 0, 0, 0);
 ```
