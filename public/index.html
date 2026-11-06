@@ -203,6 +203,7 @@ const NOMBRE = "Isis";             // su nombre o apodo
 const DE = "Andrei";                // quién firma
 const LUGAR = "Movistar Arena";                // ej: "Movistar Arena" (déjalo vacío para ocultarlo)
 const CONCIERTO = new Date(2027, 7, 20, 21, 0, 0); // 20 ago 2027, 21:00
+const HILARY_DESDE = 43;                           // segundo donde parte la canción de Hilary
 const ABRE = new Date(2026, 10, 25, 0, 0, 0);      // se desbloquea el 25 nov 2026 (agrega ?probar a la URL para verla antes)
 /* ============================== */
 
@@ -248,7 +249,7 @@ function unlockHilary() {
   // iPhone y otros: cada canción tiene que recibir play() durante un toque para poder sonar después
   if (unlocked) return; unlocked = true;
   const h = $("hilary"); h.muted = true;
-  h.play().then(() => { h.pause(); h.currentTime = 0; h.muted = false; }).catch(() => { h.muted = false; unlocked = false; });
+  h.play().then(() => { h.pause(); h.currentTime = HILARY_DESDE; h.muted = false; }).catch(() => { h.muted = false; unlocked = false; });
 }
 function startMusic() {
   if (!$("s0").hidden) return;
@@ -274,7 +275,7 @@ mBtn.addEventListener("pointerdown", e => e.stopPropagation());
 /* Al revelar: se apaga la primera canción y entra la de Hilary */
 function playHilary() {
   const h = $("hilary");
-  h.muted = false; h.currentTime = 0; h.volume = 0;
+  h.muted = false; h.currentTime = HILARY_DESDE; h.volume = 0;
   h.play().then(() => {
     musicaOn = true; mBtn.hidden = false; mBtn.classList.add("playing"); mBtn.textContent = "♪";
     let v = 0; const f = setInterval(() => {
